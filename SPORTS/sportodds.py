@@ -5,7 +5,4 @@ cursor = conn.cursor()
 
 cursor.exectute('''
 
-
-
-
 ''')
