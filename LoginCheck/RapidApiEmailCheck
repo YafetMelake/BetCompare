@@ -1,9 +1,10 @@
 import requests
 
 def  get_email(email):    
+
     url = "https://mailcheck.p.rapidapi.com/"
 
-    querystring = {"domain": email}
+    querystring = {"domain":"mailinator.com"}
 
     headers = {
         "X-RapidAPI-Key": "c7d2f04cc3msh688208d8fd9079dp1d3c72jsnfa46ed8c8d2f",

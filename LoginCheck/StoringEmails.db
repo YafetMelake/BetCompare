@@ -1,12 +1,15 @@
-def account_made(email, password):
+import sqlite3
+
+
+def make_account(email, password):
     conn = sqlite3.connect('accounts.db')
     cursor = conn.cursor()
 
     sql = '''CREATE TABLE IF NOT EXISTS ACCOUNTS(EMAIL VARCHAR(300), PASSWORD VARCHAR(300))'''
     cursor.execute(sql)
 
-    cursor.execute()
-    exists = cursor.fetchone
+    cursor.execute("SELECT EMAIL FROM ACCOUNTS WHERE EMAIL = ?", (email,))
+    exists = cursor.fetchone()
 
     if exists:
         print("Account linked with this email already exists")
