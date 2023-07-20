@@ -1,0 +1,57 @@
+import requests
+import sqlite3
+import json
+
+def  get_email(email):    
+    url = "https://mailcheck.p.rapidapi.com/"
+
+    querystring = {"domain": email}
+
+    headers = {
+        "X-RapidAPI-Key": "c7d2f04cc3msh688208d8fd9079dp1d3c72jsnfa46ed8c8d2f",
+        "X-RapidAPI-Host": "mailcheck.p.rapidapi.com"
+    }
+
+    response = requests.get(url, headers=headers, params=querystring)
+
+    print(response.json())
+
+def make_account(email, password):
+    conn = sqlite3.connect('accounts.db')
+    cursor = conn.cursor()
+
+    sql = '''CREATE TABLE IF NOT EXISTS ACCOUNTS(EMAIL VARCHAR(300), PASSWORD VARCHAR(300))'''
+    cursor.execute(sql)
+
+    cursor.execute("SELECT EMAIL FROM ACCOUNTS WHERE EMAIL = ?", (email,))
+    exists = cursor.fetchone()
+
+    if exists:
+        print("Account linked with this email already exists")
+        conn.close()
+        return False
+    else:
+        cursor.execute(''' INSERT INTO ACCOUNTS(EMAIL, PASSWORD) VALUES(?,?)''', (email, password))
+        
+
+    conn.commit()
+    cursor.execute("SELECT * FROM ACCOUNTS")
+    print("You have now made an account",
+        cursor.fethchall()[-1])
+    conn.close()
+
+    return True
+
+def authentication():
+    while True: 
+        email = input("Please enter your Email: ")
+        valid_email = get_email(email)
+        while not valid_email:
+            email = input("Please enter another Email as this is not Valid: ")
+            valid_email = get_email(email)
+
+        print("Please now enter a password")
+        valid_password = input("Password:")
+
+        if make_account(valid_email, valid_password):
+            break
