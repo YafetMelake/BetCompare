@@ -5,7 +5,7 @@ url = "https://odds.p.rapidapi.com/v4/sports"
 querystring = {"all":"true"}
 
 headers = {
-	"X-RapidAPI-Key": "fa0ac5825397d3f6937cc0144daa39b1", # personal api key
+	"X-RapidAPI-Key": "c7d2f04cc3msh688208d8fd9079dp1d3c72jsnfa46ed8c8d2f",
 	"X-RapidAPI-Host": "odds.p.rapidapi.com"
 }
 

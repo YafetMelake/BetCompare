@@ -1,7 +1,5 @@
-import requests
-import sqlite3
 from RapidApiEmailCheck import get_email
-from StoringEmails.db import make_account
+from StoringEmails import make_account
 
 def authentication():
     while True: 
@@ -16,3 +14,4 @@ def authentication():
 
         if make_account(valid_email, valid_password):
             break
+    
