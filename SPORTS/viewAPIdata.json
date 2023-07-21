@@ -7,8 +7,7 @@
     },
     {"key": "americanfootball_nfl_preseason", "group": "American Football", "title": "NFL Preseason", "description": "US Football", "active": true, "has_outrights": false
     },
-    {"key": "americanfootball_nfl_super_bowl_winner", "group": "American Football", "title": "NFL Super 
-Bowl Winner", "description": "Super Bowl Winner 2023/2024", "active": true, "has_outrights": true
+    {"key": "americanfootball_nfl_super_bowl_winner", "group": "American Football", "title": "NFL Super Bowl Winner", "description": "Super Bowl Winner 2023/2024", "active": true, "has_outrights": true
     },
     {"key": "americanfootball_xfl", "group": "American Football", "title": "XFL", "description": "US Football", "active": false, "has_outrights": false
     },
@@ -110,8 +109,7 @@ Bowl Winner", "description": "Super Bowl Winner 2023/2024", "active": true, "has
     },
     {"key": "soccer_efl_champ", "group": "Soccer", "title": "Championship", "description": "EFL Championship", "active": true, "has_outrights": false
     },
-    {"key": "soccer_england_efl_cup", "group": "Soccer", "title": "EFL Cup", "description": "League 
-Cup", "active": true, "has_outrights": false
+    {"key": "soccer_england_efl_cup", "group": "Soccer", "title": "EFL Cup", "description": "League Cup", "active": true, "has_outrights": false
     },
     {"key": "soccer_england_league1", "group": "Soccer", "title": "League 1", "description": "EFL League 1", "active": true, "has_outrights": false
     },
@@ -125,7 +123,7 @@ Cup", "active": true, "has_outrights": false
     },
     {"key": "soccer_fifa_world_cup_winner", "group": "Soccer", "title": "FIFA World Cup Winner", "description": "FIFA World Cup Winner 2022", "active": false, "has_outrights": true
     },
-    {"key": "soccer_fifa_world_cup_womens", "group": "Soccer", "title": "FIFA Women"s World Cup", "description": "FIFA Women"s World Cup", "active": true, "has_outrights": false
+    {"key": "soccer_fifa_world_cup_womens", "group": "Soccer", "title": "FIFA Women's World Cup", "description": "FIFA Women's World Cup", "active": true, "has_outrights": false
     },
     {"key": "soccer_finland_veikkausliiga", "group": "Soccer", "title": "Veikkausliiga - Finland", "description": "Finnish  Soccer", "active": true, "has_outrights": false
     },
@@ -190,22 +188,22 @@ Cup", "active": true, "has_outrights": false
     },
     {"key": "soccer_usa_mls", "group": "Soccer", "title": "MLS", "description": "Major League Soccer", "active": false, "has_outrights": false
     },
-    {"key": "tennis_atp_aus_open_singles", "group": "Tennis", "title": "ATP Australian Open", "description": "Men"s Singles", "active": false, "has_outrights": false
+    {"key": "tennis_atp_aus_open_singles", "group": "Tennis", "title": "ATP Australian Open", "description": "Men's Singles", "active": false, "has_outrights": false
     },
-    {"key": "tennis_atp_french_open", "group": "Tennis", "title": "ATP French Open", "description": "Men"s Singles", "active": false, "has_outrights": false
+    {"key": "tennis_atp_french_open", "group": "Tennis", "title": "ATP French Open", "description": "Men's Singles", "active": false, "has_outrights": false
     },
-    {"key": "tennis_atp_us_open", "group": "Tennis", "title": "ATP US Open", "description": "Men"s Singles", "active": false, "has_outrights": 
+    {"key": "tennis_atp_us_open", "group": "Tennis", "title": "ATP US Open", "description": "Men's Singles", "active": false, "has_outrights": 
 false
     },
-    {"key": "tennis_atp_wimbledon", "group": "Tennis", "title": "ATP Wimbledon", "description": "Men"s Singles", "active": false, "has_outrights": false
+    {"key": "tennis_atp_wimbledon", "group": "Tennis", "title": "ATP Wimbledon", "description": "Men's Singles", "active": false, "has_outrights": false
     },
-    {"key": "tennis_wta_aus_open_singles", "group": "Tennis", "title": "WTA Australian Open", "description": "Women"s Singles", "active": false, "has_outrights": false
+    {"key": "tennis_wta_aus_open_singles", "group": "Tennis", "title": "WTA Australian Open", "description": "Women's Singles", "active": false, "has_outrights": false
     },
-    {"key": "tennis_wta_french_open", "group": "Tennis", "title": "WTA French Open", "description": "Women"s Singles", "active": false, "has_outrights": false
+    {"key": "tennis_wta_french_open", "group": "Tennis", "title": "WTA French Open", "description": "Women's Singles", "active": false, "has_outrights": false
     },
-    {"key": "tennis_wta_us_open", "group": "Tennis", "title": "WTA US Open", "description": "Women"s Singles", "active": false, "has_outrights": false
+    {"key": "tennis_wta_us_open", "group": "Tennis", "title": "WTA US Open", "description": "Women's Singles", "active": false, "has_outrights": false
     },
-    {"key": "tennis_wta_wimbledon", "group": "Tennis", "title": "WTA Wimbledon", "description": "Women"s Singles", 
+    {"key": "tennis_wta_wimbledon", "group": "Tennis", "title": "WTA Wimbledon", "description": "Women's Singles", 
 "active": false, "has_outrights": false
     }
 ]

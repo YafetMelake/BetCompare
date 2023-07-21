@@ -1,16 +1,7 @@
-import requests
+import re
 
-def  get_email(email):    
+def check_email(email):      
+    
+    regex = '^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$'     
 
-    url = "https://mailcheck.p.rapidapi.com/"
-
-    querystring = {"domain":"mailinator.com"}
-
-    headers = {
-        "X-RapidAPI-Key": "c7d2f04cc3msh688208d8fd9079dp1d3c72jsnfa46ed8c8d2f",
-        "X-RapidAPI-Host": "mailcheck.p.rapidapi.com"
-    }
-
-    response = requests.get(url, headers=headers, params=querystring)
-
-    print(response.json())
+    return True if re.search(regex,email) else False
