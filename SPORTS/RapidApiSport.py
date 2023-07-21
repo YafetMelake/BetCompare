@@ -39,7 +39,7 @@ def sports_odds():
 
 
 def save_sports(key):
-    conn = sqlite3.connect("sports_oddy.db")
+    conn = sqlite3.connect("sports_oddyy.db")
     cursor = conn.cursor()
 
     home_price = None

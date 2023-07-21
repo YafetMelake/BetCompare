@@ -1,11 +1,8 @@
 import sqlite3
 
 def make_account(email, password):
-    conn = sqlite3.connect("sports_oddy.db") 
+    conn = sqlite3.connect("sports_oddyy.db") 
     cursor = conn.cursor()
-
-    sql = """CREATE TABLE IF NOT EXISTS ACCOUNTS(EMAIL VARCHAR(300), PASSWORD VARCHAR(300))"""
-    cursor.execute(sql)
 
     cursor.execute("SELECT EMAIL FROM ACCOUNTS WHERE EMAIL = ?", (email,))
     exists = cursor.fetchone()
