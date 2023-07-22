@@ -21,9 +21,6 @@ import sqlite3
 #     conn.commit()
 #     conn.close()
 
-
-
-
 def sports_odds():
     url = "https://odds.p.rapidapi.com/v4/sports/upcoming/odds"
 
