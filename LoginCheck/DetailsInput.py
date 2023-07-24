@@ -1,7 +1,5 @@
-import re
-
+from LoginCheck.RegExEmailCheck import *
 from LoginCheck.StoringEmails import *
-
 
 def authentication(sportsdbfile):
     while True:
@@ -19,8 +17,3 @@ def authentication(sportsdbfile):
         if make_account(email, valid_password, sportsdbfile):
             break
 
-
-def check_email(email):
-    regex = "^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$"
-
-    return True if re.search(regex, email) else False
