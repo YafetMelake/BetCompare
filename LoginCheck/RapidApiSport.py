@@ -35,8 +35,8 @@ def sports_odds():
     return odds_response.json()
 
 
-def save_sports(key):
-    conn = sqlite3.connect("sports_oddyy.db")
+def save_sports(key, sportsdbfile):
+    conn = sqlite3.connect(sportsdbfile)
     cursor = conn.cursor()
 
     home_price = None
@@ -63,10 +63,9 @@ def save_sports(key):
     conn.commit()
     conn.close()
 
-response_data = sports_odds()
 
-for key in response_data:
-    save_sports(key)
-    print(key)
-
-sports_odds()
+def sportssoddss(sportsdbfile):
+    response_data = sports_odds()
+    for key in response_data:
+        save_sports(key, sportsdbfile)
+        print(key)

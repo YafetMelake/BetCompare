@@ -1,7 +1,7 @@
 import sqlite3
 
-def make_account(email, password):
-    conn = sqlite3.connect("sports_oddyy.db") 
+def make_account(email, password, sportsdbfile):
+    conn = sqlite3.connect(sportsdbfile) 
     cursor = conn.cursor()
 
     cursor.execute("SELECT EMAIL FROM ACCOUNTS WHERE EMAIL = ?", (email,))

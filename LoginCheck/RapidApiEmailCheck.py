@@ -1,6 +1,6 @@
 import re
 
-def check_email(email):      
+def check_email(email):
     
     regex = '^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$'     
 
