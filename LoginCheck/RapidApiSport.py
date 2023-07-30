@@ -1,26 +1,6 @@
 import requests
 import sqlite3
 
-# def sports():
-#     url = "https://odds.p.rapidapi.com/v4/sports"
-#     querystring = {"all": "true"}
-#     headers = {
-#         "X-RapidAPI-Key": "c7d2f04cc3msh688208d8fd9079dp1d3c72jsnfa46ed8c8d2f",
-#         "X-RapidAPI-Host": "odds.p.rapidapi.com"
-#     }
-#     response = requests.get(url, headers=headers, params=querystring)
-#     return response.json()
-
-
-# def save_sports(key):
-#     conn = sqlite3.connect("sports.db")
-#     cursor = conn.cursor()
-    
-#     cursor.execute(""" INSERT INTO SPORTSSS(KEY, GROUPYafet, DESCRIPTION, OUTRIGHTS, TITLE) VALUES(?,?,?,?,?)""", (key["key"], key["group"], key["description"], key["has_outrights"], key["title"]))
-	
-#     conn.commit()
-#     conn.close()
-
 def sports_odds():
     url = "https://odds.p.rapidapi.com/v4/sports/upcoming/odds"
 
@@ -63,9 +43,53 @@ def save_sports(key, sportsdbfile):
     conn.commit()
     conn.close()
 
+def bookmakers_table(sportsdbfile, response_data):
+    conn = sqlite3.connect(sportsdbfile)
+    cursor = conn.cursor()
+
+    cursor.execute("CREATE TABLE IF NOT EXISTS BOOKMAKERS (ID INTEGER PRIMARY KEY, NAME TEXT)")
+
+    for key in response_data:
+        bookmakers = key["bookmakers"]
+        for bookmaker in bookmakers:
+            cursor.execute("INSERT OR IGNORE INTO BOOKMAKERS (NAME) VALUES (?)", (bookmaker["title"],))
+
+    conn.commit()
+    conn.close()
+
+def matches_table(sportsdbfile, response_data):
+    conn = sqlite3.connect(sportsdbfile)
+    cursor = conn.cursor()
+
+    cursor.execute("CREATE TABLE IF NOT EXISTS Matches (ID INTEGER PRIMARY KEY, Date TEXT, Description TEXT, HomeTeam TEXT, AwayTeam TEXT)")
+
+    for key in response_data:
+        date = key.get("commence_time")
+        description = key.get("sport_key")
+        home_team = key.get("home_team")
+        away_team = key.get("away_team")
+
+        cursor.execute("INSERT INTO Matches (Date, Description, HomeTeam, AwayTeam) VALUES (?, ?, ?, ?)",
+                       (date, description, home_team, away_team))
+
+    conn.commit()
+    conn.close()
+
+def price_table(sportsdbfile, response_data):
+    conn = sqlite3.connect(sportsdbfile)
+    cursor = conn.cursor()
+
+    cursor.execute("CREATE TABLE IF NOT EXISTS PRICE (ID INTEGER PRIMARY KEY, BookieID INTEGER, MatchID INTEGER, HomePrice REAL, AwayPrice REAL, FOREIGN KEY(BookieID) REFERENCES BOOKMAKERS(ID), FOREIGN KEY(MatchID) REFERENCES Matches(ID))")
+
+    conn.commit()
+    conn.close()
 
 def sportssoddss(sportsdbfile):
     response_data = sports_odds()
+    bookmakers_table(sportsdbfile, response_data)
+    matches_table(sportsdbfile, response_data)
+    price_table(sportsdbfile, response_data)
+
     for key in response_data:
         save_sports(key, sportsdbfile)
         print(key)
