@@ -50,7 +50,7 @@ def bookmakers_table(sportsdbfile, response_data):
     cursor = conn.cursor()
 
     cursor.execute("CREATE TABLE IF NOT EXISTS BOOKMAKERS (ID INTEGER PRIMARY KEY, NAME TEXT)")
-    
+
     for key in response_data:
         bookmakers = key["bookmakers"]
         for bookmaker in bookmakers:
