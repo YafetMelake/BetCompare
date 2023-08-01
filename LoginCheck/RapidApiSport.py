@@ -19,6 +19,8 @@ def save_sports(key, sportsdbfile):
     conn = sqlite3.connect(sportsdbfile)
     cursor = conn.cursor()
 
+    cursor.execute("CREATE TABLE IF NOT EXISTS ODDSTABLE (SPORT TEXT, BOOKIE TEXT, HOMETEAM TEXT, HOMEPRICE REAL, AWAYTEAM TEXT, AWAYPRICE REAL)")
+
     home_price = None
     away_price = None
 
@@ -48,7 +50,7 @@ def bookmakers_table(sportsdbfile, response_data):
     cursor = conn.cursor()
 
     cursor.execute("CREATE TABLE IF NOT EXISTS BOOKMAKERS (ID INTEGER PRIMARY KEY, NAME TEXT)")
-
+    
     for key in response_data:
         bookmakers = key["bookmakers"]
         for bookmaker in bookmakers:
@@ -79,7 +81,7 @@ def price_table(sportsdbfile, response_data):
     conn = sqlite3.connect(sportsdbfile)
     cursor = conn.cursor()
 
-    cursor.execute("CREATE TABLE IF NOT EXISTS PRICE (ID INTEGER PRIMARY KEY, BookieID INTEGER, MatchID INTEGER, HomePrice REAL, AwayPrice REAL, FOREIGN KEY(BookieID) REFERENCES BOOKMAKERS(ID), FOREIGN KEY(MatchID) REFERENCES Matches(ID))")
+    cursor.execute("CREATE TABLE IF NOT EXISTS PRICE (BookieID INTEGER, MatchID INTEGER, HomePrice REAL, AwayPrice REAL)")
 
     for key in response_data:
         bookmakers = key["bookmakers"]
