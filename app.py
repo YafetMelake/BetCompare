@@ -1,29 +1,27 @@
+from flask import Flask, render_template
 import sqlite3
-import requests
-from flask import Flask, session, render_template, request, g
-import os
 
 app = Flask(__name__)
 app.secret_key = "i_bet_you_cannot_guess_it"
 
+def get_prices_from_db():
+    conn = sqlite3.connect('sports_oddyy.db')
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT p.BookieID, m.HomeTeam, m.AwayTeam, p.HomePrice, p.AwayPrice
+        FROM PRICE p
+        JOIN Matches m ON p.MatchID = m.ID
+    """)
+    data = cursor.fetchall()
+
+    conn.close()
+    return data
+
 @app.route("/")
 def index():
-    data = get_db()
-    return render_template("index.html")
-
-def get_db():
-    db = getattr(g, '_database', None)
-    if db is None:
-        db = g.__database = sqlite3.connect('sports_oddy.db')
-        cursor = db.cursor()
-        cursor.execute("SELECT * FROM PRICES")
-    return cursor.fetchall()
-
-@app.teardown_appcontext
-def close_connection(exception):
-    db = getattr(g, '_database', None)
-    if db is not None:
-        db.close()
+    data = get_prices_from_db()
+    return render_template("index.html", data=data)
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)
