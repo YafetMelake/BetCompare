@@ -69,7 +69,7 @@ def matches_table(sportsdbfile, response_data):
         home_team = key.get("home_team")
         away_team = key.get("away_team")
 
-        cursor.execute("INSERT INTO Matches (Date, Description, HomeTeam, AwayTeam) VALUES (?, ?, ?, ?)",
+        cursor.execute("INSERT OR IGNORE INTO Matches (Date, Description, HomeTeam, AwayTeam) VALUES (?, ?, ?, ?)",
                        (date, description, home_team, away_team))
 
     conn.commit()
@@ -81,8 +81,40 @@ def price_table(sportsdbfile, response_data):
 
     cursor.execute("CREATE TABLE IF NOT EXISTS PRICE (ID INTEGER PRIMARY KEY, BookieID INTEGER, MatchID INTEGER, HomePrice REAL, AwayPrice REAL, FOREIGN KEY(BookieID) REFERENCES BOOKMAKERS(ID), FOREIGN KEY(MatchID) REFERENCES Matches(ID))")
 
+    for key in response_data:
+        bookmakers = key["bookmakers"]
+        for bookmaker in bookmakers:
+            cursor.execute("INSERT OR IGNORE INTO BOOKMAKERS (NAME) VALUES (?)", (bookmaker["title"],))
+
+        markets = key["bookmakers"][0]["markets"]
+        for market in markets:
+            if market["key"] == "h2h":
+                outcomes = market["outcomes"]
+                home_price = None
+                away_price = None
+                for outcome in outcomes:
+                    if outcome["name"] == key["home_team"]:
+                        home_price = outcome["price"]
+                    elif outcome["name"] == key["away_team"]:
+                        away_price = outcome["price"]
+
+                cursor.execute("SELECT ID FROM BOOKMAKERS WHERE NAME=?", (key["bookmakers"][0]["title"],))
+                bookie_id = cursor.fetchone()
+                if bookie_id is not None:
+                    bookie_id = bookie_id[0]
+
+                cursor.execute("SELECT ID FROM Matches WHERE HomeTeam=? AND AwayTeam=?", (key["home_team"], key["away_team"]))
+                match_id = cursor.fetchone()
+                if match_id is not None:
+                    match_id = match_id[0] 
+
+                cursor.execute("INSERT INTO PRICE (BookieID, MatchID, HomePrice, AwayPrice) VALUES (?, ?, ?, ?)",
+                               (bookie_id, match_id, home_price, away_price))
+
     conn.commit()
     conn.close()
+
+
 
 def sportssoddss(sportsdbfile):
     response_data = sports_odds()
