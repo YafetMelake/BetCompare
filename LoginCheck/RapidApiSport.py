@@ -1,17 +1,30 @@
 import requests
 import sqlite3
 
+API_KEY = '07556a48f189162eef6239585994f7f2'
+
+SPORT = 'soccer'  # use the sport_key from the /sports endpoint below, or use 'upcoming' to see the next 8 games across all sports
+
+REGIONS = 'uk, eu'  # uk | us | eu | au. Multiple can be specified if comma delimited
+
+MARKETS = 'h2h'  # h2h | spreads | totals. Multiple can be specified if comma delimited
+
+ODDS_FORMAT = 'decimal'  # decimal | american
+
+DATE_FORMAT = 'iso'  # iso | unix
+
 def sports_odds():
-    url = "https://odds.p.rapidapi.com/v4/sports/upcoming/odds"
 
-    querystring = {"regions":"us","oddsFormat":"decimal","markets":"h2h,spreads","dateFormat":"iso"}
-
-    headers = {
-        "X-RapidAPI-Key": "c7d2f04cc3msh688208d8fd9079dp1d3c72jsnfa46ed8c8d2f",
-        "X-RapidAPI-Host": "odds.p.rapidapi.com"
+    odds_response = requests.get(
+    f'https://api.the-odds-api.com/v4/sports/{SPORT}/odds',
+    params={
+        'api_key': API_KEY,
+        'regions': REGIONS,
+        'markets': MARKETS,
+        'oddsFormat': ODDS_FORMAT,
+        'dateFormat': DATE_FORMAT,
     }
-
-    odds_response = requests.get(url, headers=headers, params=querystring)
+)
     return odds_response.json()
 
 
@@ -81,7 +94,7 @@ def price_table(sportsdbfile, response_data):
     conn = sqlite3.connect(sportsdbfile)
     cursor = conn.cursor()
 
-    cursor.execute("CREATE TABLE IF NOT EXISTS PRICE (BookieID INTEGER, MatchID INTEGER, HomePrice REAL, AwayPrice REAL)")
+    cursor.execute("CREATE TABLE IF NOT EXISTS PRICE (BookieID INTEGER, MatchID INTEGER, HomePrice REAL, AwayPrice REAL, DrawPrice REAL)")
 
     for key in response_data:
         bookmakers = key["bookmakers"]
@@ -94,11 +107,15 @@ def price_table(sportsdbfile, response_data):
                 outcomes = market["outcomes"]
                 home_price = None
                 away_price = None
+                draw_price = None  # Initialize draw_price variable
+
                 for outcome in outcomes:
                     if outcome["name"] == key["home_team"]:
                         home_price = outcome["price"]
                     elif outcome["name"] == key["away_team"]:
                         away_price = outcome["price"]
+                    elif outcome["name"] == "Draw":
+                        draw_price = outcome["price"]  # Assign draw price
 
                 cursor.execute("SELECT ID FROM BOOKMAKERS WHERE NAME=?", (key["bookmakers"][0]["title"],))
                 bookie_id = cursor.fetchone()
@@ -110,8 +127,8 @@ def price_table(sportsdbfile, response_data):
                 if match_id is not None:
                     match_id = match_id[0] 
 
-                cursor.execute("INSERT INTO PRICE (BookieID, MatchID, HomePrice, AwayPrice) VALUES (?, ?, ?, ?)",
-                               (bookie_id, match_id, home_price, away_price))
+                cursor.execute("INSERT INTO PRICE (BookieID, MatchID, HomePrice, AwayPrice, DrawPrice) VALUES (?, ?, ?, ?, ?)",
+                               (bookie_id, match_id, home_price, away_price, draw_price))
 
     conn.commit()
     conn.close()

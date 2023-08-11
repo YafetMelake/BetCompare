@@ -11,10 +11,11 @@
             <table class="table table-bordered table-hover">
                 <thead class="thead-dark">
                     <tr>
-                        <th>BookieID</th>
-                        <th>MatchID</th>
+                        <th>Bookie</th>
+                        <th>Match</th>
                         <th>HomePrice</th>
                         <th>AwayPrice</th>
+                        <th>DrawPrice</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -24,11 +25,18 @@
                         <td>{{ row[1] }} vs {{ row[2] }}</td>
                         <td>{{ row[3] }}</td>
                         <td>{{ row[4] }}</td>
+                        <td>{{ row[5] }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
         </div>
+    </div>
+    <div class="container mt-4 text-center">
+        <img src="https://i.kym-cdn.com/photos/images/original/002/397/743/a53" alt="Funny Image" style="max-width: 300px;">
+        <p>
+            <a href="https://www.begambleaware.org/" target="_blank">Please visit BeGambleAware for any help</a>
+        </p>
     </div>
 </body>
 </html>

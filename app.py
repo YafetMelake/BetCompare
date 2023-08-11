@@ -9,14 +9,16 @@ def get_prices_from_db():
     cursor = conn.cursor()
 
     cursor.execute("""
-        SELECT p.BookieID, m.HomeTeam, m.AwayTeam, p.HomePrice, p.AwayPrice
+        SELECT b.NAME, m.HomeTeam, m.AwayTeam, p.HomePrice, p.AwayPrice, p.DrawPrice
         FROM PRICE p
         JOIN Matches m ON p.MatchID = m.ID
+        JOIN BOOKMAKERS b ON p.BookieID = b.ID
     """)
     data = cursor.fetchall()
 
     conn.close()
     return data
+
 
 @app.route("/")
 def index():
