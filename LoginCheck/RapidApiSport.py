@@ -1,45 +1,55 @@
 import requests
 import sqlite3
 
+API_KEY = '07556a48f189162eef6239585994f7f2'
+
+SPORT = 'Soccer'
+REGIONS = 'uk'
+MARKETS = 'h2h'
+ODDS_FORMAT = 'decimal'
+DATE_FORMAT = 'iso'
+
 def sports_odds():
-    url = "https://odds.p.rapidapi.com/v4/sports/upcoming/odds"
-
-    querystring = {"regions":"us","oddsFormat":"decimal","markets":"h2h,spreads","dateFormat":"iso"}
-
-    headers = {
-        "X-RapidAPI-Key": "c7d2f04cc3msh688208d8fd9079dp1d3c72jsnfa46ed8c8d2f",
-        "X-RapidAPI-Host": "odds.p.rapidapi.com"
-    }
-
-    odds_response = requests.get(url, headers=headers, params=querystring)
+    odds_response = requests.get(
+        f'https://api.the-odds-api.com/v4/sports/{SPORT}/odds',
+        params={
+            'api_key': API_KEY,
+            'regions': REGIONS,
+            'markets': MARKETS,
+            'oddsFormat': ODDS_FORMAT,
+            'dateFormat': DATE_FORMAT,
+        }
+    )
     return odds_response.json()
-
 
 def save_sports(key, sportsdbfile):
     conn = sqlite3.connect(sportsdbfile)
     cursor = conn.cursor()
 
-    cursor.execute("CREATE TABLE IF NOT EXISTS ODDSTABLE (SPORT TEXT, BOOKIE TEXT, HOMETEAM TEXT, HOMEPRICE REAL, AWAYTEAM TEXT, AWAYPRICE REAL)")
+    cursor.execute("CREATE TABLE IF NOT EXISTS ODDSTABLE (SPORT TEXT, BOOKIE TEXT, HOMETEAM TEXT, HOMEPRICE REAL, AWAYTEAM TEXT, AWAYPRICE REAL, UNIQUE(BOOKIE, HOMETEAM, AWAYTEAM))")
 
     home_price = None
     away_price = None
+    bookmaker_key = None
 
-    bookmaker_key = key["bookmakers"][0]["key"]
-
-    markets = key["bookmakers"][0]["markets"]
-    for market in markets:
-        if market["key"] == "h2h":
-            outcomes = market["outcomes"]
-            for outcome in outcomes:
-                if outcome["name"] == key["home_team"]:
-                    home_price = outcome["price"]
-                elif outcome["name"] == key["away_team"]:
-                    away_price = outcome["price"]
+    if "bookmakers" in key and key["bookmakers"]:
+        bookmakers = key["bookmakers"]
+        if "markets" in bookmakers[0] and bookmakers[0]["markets"]:
+            markets = bookmakers[0]["markets"]
+            for market in markets:
+                if market["key"] == "h2h":
+                    outcomes = market["outcomes"]
+                    for outcome in outcomes:
+                        if outcome.get("name") == key.get("home_team"):
+                            home_price = outcome.get("price")
+                        elif outcome.get("name") == key.get("away_team"):
+                            away_price = outcome.get("price")
+                    bookmaker_key = bookmakers[0].get("key")
 
     cursor.execute("""
-        INSERT INTO ODDSTABLE(SPORT, BOOKIE, HOMETEAM, HOMEPRICE, AWAYTEAM, AWAYPRICE)
+        INSERT OR IGNORE INTO ODDSTABLE(SPORT, BOOKIE, HOMETEAM, HOMEPRICE, AWAYTEAM, AWAYPRICE)
         VALUES(?, ?, ?, ?, ?, ?)""",
-        (key["sport_key"], bookmaker_key, key["home_team"], home_price, key["away_team"], away_price)
+        (key.get("sport_key"), bookmaker_key, key.get("home_team"), home_price, key.get("away_team"), away_price)
     )
 
     conn.commit()
@@ -49,7 +59,7 @@ def bookmakers_table(sportsdbfile, response_data):
     conn = sqlite3.connect(sportsdbfile)
     cursor = conn.cursor()
 
-    cursor.execute("CREATE TABLE IF NOT EXISTS BOOKMAKERS (ID INTEGER PRIMARY KEY, NAME TEXT)")
+    cursor.execute("CREATE TABLE IF NOT EXISTS BOOKMAKERS (ID INTEGER PRIMARY KEY, NAME TEXT UNIQUE)")
 
     for key in response_data:
         bookmakers = key["bookmakers"]
@@ -63,7 +73,7 @@ def matches_table(sportsdbfile, response_data):
     conn = sqlite3.connect(sportsdbfile)
     cursor = conn.cursor()
 
-    cursor.execute("CREATE TABLE IF NOT EXISTS Matches (ID INTEGER PRIMARY KEY, Date TEXT, Description TEXT, HomeTeam TEXT, AwayTeam TEXT)")
+    cursor.execute("CREATE TABLE IF NOT EXISTS Matches (ID INTEGER PRIMARY KEY, Date TEXT, Description TEXT, HomeTeam TEXT, AwayTeam TEXT, UNIQUE(Date, HomeTeam, AwayTeam))")
 
     for key in response_data:
         date = key.get("commence_time")
@@ -72,7 +82,7 @@ def matches_table(sportsdbfile, response_data):
         away_team = key.get("away_team")
 
         cursor.execute("INSERT OR IGNORE INTO Matches (Date, Description, HomeTeam, AwayTeam) VALUES (?, ?, ?, ?)",
-                       (date, description, home_team, away_team))
+                        (date, description, home_team, away_team))
 
     conn.commit()
     conn.close()
@@ -81,42 +91,46 @@ def price_table(sportsdbfile, response_data):
     conn = sqlite3.connect(sportsdbfile)
     cursor = conn.cursor()
 
-    cursor.execute("CREATE TABLE IF NOT EXISTS PRICE (BookieID INTEGER, MatchID INTEGER, HomePrice REAL, AwayPrice REAL)")
+    cursor.execute("CREATE TABLE IF NOT EXISTS PRICE (BookieID INTEGER, MatchID INTEGER, HomePrice REAL, AwayPrice REAL, DrawPrice REAL, UNIQUE(BookieID, MatchID))")
 
     for key in response_data:
-        bookmakers = key["bookmakers"]
-        for bookmaker in bookmakers:
-            cursor.execute("INSERT OR IGNORE INTO BOOKMAKERS (NAME) VALUES (?)", (bookmaker["title"],))
+        if "bookmakers" in key and key["bookmakers"]:
+            bookmakers = key["bookmakers"]
+            for bookmaker in bookmakers:
+                cursor.execute("INSERT OR IGNORE INTO BOOKMAKERS (NAME) VALUES (?)", (bookmaker.get("title", ""),))
 
-        markets = key["bookmakers"][0]["markets"]
-        for market in markets:
-            if market["key"] == "h2h":
-                outcomes = market["outcomes"]
-                home_price = None
-                away_price = None
-                for outcome in outcomes:
-                    if outcome["name"] == key["home_team"]:
-                        home_price = outcome["price"]
-                    elif outcome["name"] == key["away_team"]:
-                        away_price = outcome["price"]
+            if "markets" in bookmakers[0] and bookmakers[0]["markets"]:
+                markets = bookmakers[0]["markets"]
+                for market in markets:
+                    if market["key"] == "h2h":
+                        outcomes = market.get("outcomes", [])
+                        home_price = None
+                        away_price = None
+                        draw_price = None  
 
-                cursor.execute("SELECT ID FROM BOOKMAKERS WHERE NAME=?", (key["bookmakers"][0]["title"],))
-                bookie_id = cursor.fetchone()
-                if bookie_id is not None:
-                    bookie_id = bookie_id[0]
+                        for outcome in outcomes:
+                            if outcome.get("name") == key.get("home_team"):
+                                home_price = outcome.get("price")
+                            elif outcome.get("name") == key.get("away_team"):
+                                away_price = outcome.get("price")
+                            elif outcome.get("name") == "Draw":
+                                draw_price = outcome.get("price")  
 
-                cursor.execute("SELECT ID FROM Matches WHERE HomeTeam=? AND AwayTeam=?", (key["home_team"], key["away_team"]))
-                match_id = cursor.fetchone()
-                if match_id is not None:
-                    match_id = match_id[0] 
+                        cursor.execute("SELECT ID FROM BOOKMAKERS WHERE NAME=?", (bookmaker.get("title", ""),))
+                        bookie_id = cursor.fetchone()
+                        if bookie_id is not None:
+                            bookie_id = bookie_id[0]
 
-                cursor.execute("INSERT INTO PRICE (BookieID, MatchID, HomePrice, AwayPrice) VALUES (?, ?, ?, ?)",
-                               (bookie_id, match_id, home_price, away_price))
+                        cursor.execute("SELECT ID FROM Matches WHERE HomeTeam=? AND AwayTeam=?", (key.get("home_team"), key.get("away_team")))
+                        match_id = cursor.fetchone()
+                        if match_id is not None:
+                            match_id = match_id[0] 
+
+                        cursor.execute("INSERT INTO PRICE (BookieID, MatchID, HomePrice, AwayPrice, DrawPrice) VALUES (?, ?, ?, ?, ?)",
+                                       (bookie_id, match_id, home_price, away_price, draw_price))
 
     conn.commit()
     conn.close()
-
-
 
 def sportssoddss(sportsdbfile):
     response_data = sports_odds()
