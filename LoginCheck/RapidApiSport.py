@@ -1,15 +1,18 @@
+'''this is the main of the backend and here is where the API is called and then the data received
+    is sorted into the correct table in the database and maps to eachother'''
+
 import requests
 import sqlite3
 
 API_KEY = '07556a48f189162eef6239585994f7f2'
 
-SPORT = 'Soccer'
+SPORT = 'Soccer' 
 REGIONS = 'uk'
 MARKETS = 'h2h'
 ODDS_FORMAT = 'decimal'
 DATE_FORMAT = 'iso'
 
-def sports_odds():
+def sports_odds(): #this function calls the API and specifies what I want by the params
     odds_response = requests.get(
         f'https://api.the-odds-api.com/v4/sports/{SPORT}/odds',
         params={
@@ -20,19 +23,21 @@ def sports_odds():
             'dateFormat': DATE_FORMAT,
         }
     )
-    return odds_response.json()
+    return odds_response.json() #returns it as a JSON
 
 def save_sports(key, sportsdbfile):
     conn = sqlite3.connect(sportsdbfile)
     cursor = conn.cursor()
 
+    #this table is used so I can double check the data in the other tables to make sure they are correct
     cursor.execute("CREATE TABLE IF NOT EXISTS ODDSTABLE (SPORT TEXT, BOOKIE TEXT, HOMETEAM TEXT, HOMEPRICE REAL, AWAYTEAM TEXT, AWAYPRICE REAL, UNIQUE(BOOKIE, HOMETEAM, AWAYTEAM))")
 
-    home_price = None
+    home_price = None #originaly these are None but then they are given their value through the loop
     away_price = None
     bookmaker_key = None
 
-    if "bookmakers" in key and key["bookmakers"]:
+    if "bookmakers" in key and key["bookmakers"]: # these nested if statements are used so I can filter 
+                                                  # through the data and keys to get to the data I want and saves it to the variables above initially defined as None 
         bookmakers = key["bookmakers"]
         if "markets" in bookmakers[0] and bookmakers[0]["markets"]:
             markets = bookmakers[0]["markets"]
@@ -55,11 +60,11 @@ def save_sports(key, sportsdbfile):
     conn.commit()
     conn.close()
 
-def bookmakers_table(sportsdbfile, response_data):
+def bookmakers_table(sportsdbfile, response_data): #bookmakers table is a table only for the bookmakers and provides them with an ID so it can be mapped to the other tables
     conn = sqlite3.connect(sportsdbfile)
     cursor = conn.cursor()
 
-    cursor.execute("CREATE TABLE IF NOT EXISTS BOOKMAKERS (ID INTEGER PRIMARY KEY, NAME TEXT UNIQUE)")
+    cursor.execute("CREATE TABLE IF NOT EXISTS BOOKMAKERS (ID INTEGER PRIMARY KEY, NAME TEXT UNIQUE)") #made it unique which means no duplication everytime the API is called as without this it would just keep adding every bookmaker from each call
 
     for key in response_data:
         bookmakers = key["bookmakers"]
@@ -69,13 +74,13 @@ def bookmakers_table(sportsdbfile, response_data):
     conn.commit()
     conn.close()
 
-def matches_table(sportsdbfile, response_data):
+def matches_table(sportsdbfile, response_data): #contains the data for the match like the date&time, what league it is in, and the two teams playing against eachother aswell 
     conn = sqlite3.connect(sportsdbfile)
     cursor = conn.cursor()
 
     cursor.execute("CREATE TABLE IF NOT EXISTS Matches (ID INTEGER PRIMARY KEY, Date TEXT, Description TEXT, HomeTeam TEXT, AwayTeam TEXT, UNIQUE(Date, HomeTeam, AwayTeam))")
 
-    for key in response_data:
+    for key in response_data: #for loop allows for it to go through the JSON and get the data from the keys
         date = key.get("commence_time")
         description = key.get("sport_key")
         home_team = key.get("home_team")
@@ -87,7 +92,7 @@ def matches_table(sportsdbfile, response_data):
     conn.commit()
     conn.close()
 
-def price_table(sportsdbfile, response_data):
+def price_table(sportsdbfile, response_data): #main function as all the other data from the other tables maps to the data 
     conn = sqlite3.connect(sportsdbfile)
     cursor = conn.cursor()
 
