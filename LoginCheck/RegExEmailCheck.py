@@ -1,3 +1,6 @@
+'''Function that checks to make sure email is valid using regular expression to verify 
+    that there is an @ sign a . and also a 3 letter ending fo the domain extension'''
+
 import re
 
 def check_email(email):
