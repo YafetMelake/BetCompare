@@ -143,7 +143,6 @@ def price_table(sportsdbfile, response_data): #main function as all the other da
     finally:
         conn.close()
 
-
 def sportssoddss(sportsdbfile):
     response_data = sports_odds()
     bookmakers_table(sportsdbfile, response_data)
