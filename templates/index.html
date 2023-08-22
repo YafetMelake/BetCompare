@@ -6,118 +6,12 @@
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <style>
-        /* Add your custom styles here */
-        body {
-            font-family: Arial, sans-serif;
-            background-image: url("https://media.istockphoto.com/id/1435167377/photo/soccer-stadium-field-soccer-background.webp?b=1&s=170667a&w=0&k=20&c=Zvt9E628RczuRjHhFMF6sQLOqQlvFk5MjKoj2gSb7nE=");
-            background-size: cover;
-            background-repeat: no-repeat;
-            background-position: center center;
-            margin: 0;
-            padding: 0;
-            color: #fff; /* White text color */
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        .card {
-            border: none;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            margin-bottom: 20px;
-            background-color: #fff; /* White background for cards */
-            color: #333; /* Text color inside cards */
-            width: 1000px; /* Adjust the width as desired */
-            margin: 0 auto; /* Center the card */
-        }
-
-        .card-header {
-            background-color: #ff4500; /* Orange header background color */
-            color: #fff; /* White text color for league names */
-            padding: 15px 20px; /* Adjust padding */
-            border-bottom: none;
-            cursor: pointer;
-            text-align: center; /* Center the league names */
-        }
-
-        .card-header:hover {
-            background-color: #ff6600;
-        }
-
-        .card-header button {
-            font-size: 18px;
-            font-weight: bold;
-            border: none;
-            background-color: transparent;
-            color: inherit;
-            padding: 0;
-        }
-
-        .card-body {
-            background-color: #f8f9fa;
-            padding: 20px;
-        }
-
-        .table {
-            margin-bottom: 0;
-            width: 100%; /* Make the table take up the full width of the card */
-        }
-
-        .table th,
-        .table td {
-            vertical-align: middle;
-        }
-
-        .text-center {
-            text-align: center;
-        }
-
-        .image {
-            max-width: 100%;
-            height: auto;
-        }
-
-        .link {
-            color: #e60707; /* red color for the link */
-            text-decoration: none;
-        }
-
-        .link:hover {
-            text-decoration: underline;
-        }
-
-        .title {
-            color: #fcf8f8; /* white title color */
-            font-weight: bold;
-            text-align: center;
-            margin-bottom: 10px;
-        }
-
-        .subheading {
-            font-size: 24px;
-            margin-bottom: 20px;
-            color: #fcf8f8; /* white color for the subheading */
-            text-align: center;
-        }
-        
-        /* Center the league cards */
-        #accordion {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 20px; /* Add gap between the league cards */
-        }
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}"> <!-- Link to external CSS -->
 </head>
 <body>
     <div class="container mt-4">
         <h1 class="mb-0 text-center title">BetCompare</h1>
-        <p class="subheading">Showing you which bookie gives the best odds for a football game</p>
+        <p class="subheading">Showing you which bookie gives the best odds for your football game of choice</p>
         
         <div id="accordion">
             {% for league, matches in league_matches.items() %}
@@ -171,4 +65,3 @@
     </div>
 </body>
 </html>
-
