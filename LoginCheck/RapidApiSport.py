@@ -92,50 +92,57 @@ def matches_table(sportsdbfile, response_data): #contains the data for the match
     conn.commit()
     conn.close()
 
-def price_table(sportsdbfile, response_data): #main function as all the other data from the other tables maps to the data 
+def price_table(sportsdbfile, response_data): #main function as all the other data from the other tables maps to the data
     conn = sqlite3.connect(sportsdbfile)
     cursor = conn.cursor()
 
     cursor.execute("CREATE TABLE IF NOT EXISTS PRICE (BookieID INTEGER, MatchID INTEGER, HomePrice REAL, AwayPrice REAL, DrawPrice REAL, UNIQUE(BookieID, MatchID))")
 
-    for key in response_data:
-        if "bookmakers" in key and key["bookmakers"]:
-            bookmakers = key["bookmakers"]
-            for bookmaker in bookmakers:
-                cursor.execute("INSERT OR IGNORE INTO BOOKMAKERS (NAME) VALUES (?)", (bookmaker.get("title", ""),))
+    try:
+        conn.execute("BEGIN")  # Start a transaction
 
-            if "markets" in bookmakers[0] and bookmakers[0]["markets"]:
-                markets = bookmakers[0]["markets"]
-                for market in markets:
-                    if market["key"] == "h2h":
-                        outcomes = market.get("outcomes", [])
-                        home_price = None
-                        away_price = None
-                        draw_price = None  
+        for key in response_data:
+            if "bookmakers" in key and key["bookmakers"]:
+                bookmakers = key["bookmakers"]
+                for bookmaker in bookmakers:
+                    cursor.execute("INSERT OR IGNORE INTO BOOKMAKERS (NAME) VALUES (?)", (bookmaker.get("title", ""),))
 
-                        for outcome in outcomes:
-                            if outcome.get("name") == key.get("home_team"):
-                                home_price = outcome.get("price")
-                            elif outcome.get("name") == key.get("away_team"):
-                                away_price = outcome.get("price")
-                            elif outcome.get("name") == "Draw":
-                                draw_price = outcome.get("price")  
+                if "markets" in bookmakers[0] and bookmakers[0]["markets"]:
+                    markets = bookmakers[0]["markets"]
+                    for market in markets:
+                        if market["key"] == "h2h":
+                            outcomes = market.get("outcomes", [])
+                            home_price = None
+                            away_price = None
+                            draw_price = None
 
-                        cursor.execute("SELECT ID FROM BOOKMAKERS WHERE NAME=?", (bookmaker.get("title", ""),))
-                        bookie_id = cursor.fetchone()
-                        if bookie_id is not None:
-                            bookie_id = bookie_id[0]
+                            for outcome in outcomes:
+                                if outcome.get("name") == key.get("home_team"):
+                                    home_price = outcome.get("price")
+                                elif outcome.get("name") == key.get("away_team"):
+                                    away_price = outcome.get("price")
+                                elif outcome.get("name") == "Draw":
+                                    draw_price = outcome.get("price")
 
-                        cursor.execute("SELECT ID FROM Matches WHERE HomeTeam=? AND AwayTeam=?", (key.get("home_team"), key.get("away_team")))
-                        match_id = cursor.fetchone()
-                        if match_id is not None:
-                            match_id = match_id[0] 
+                            cursor.execute("SELECT ID FROM BOOKMAKERS WHERE NAME=?", (bookmaker.get("title", ""),))
+                            bookie_id = cursor.fetchone()
+                            if bookie_id is not None:
+                                bookie_id = bookie_id[0]
 
-                        cursor.execute("INSERT INTO PRICE (BookieID, MatchID, HomePrice, AwayPrice, DrawPrice) VALUES (?, ?, ?, ?, ?)",
-                                       (bookie_id, match_id, home_price, away_price, draw_price))
+                            cursor.execute("SELECT ID FROM Matches WHERE HomeTeam=? AND AwayTeam=?", (key.get("home_team"), key.get("away_team")))
+                            match_id = cursor.fetchone()
+                            if match_id is not None:
+                                match_id = match_id[0]
 
-    conn.commit()
-    conn.close()
+                            cursor.execute("INSERT OR IGNORE INTO PRICE (BookieID, MatchID, HomePrice, AwayPrice, DrawPrice) VALUES (?, ?, ?, ?, ?)",
+                                           (bookie_id, match_id, home_price, away_price, draw_price))
+
+        conn.commit()  # Commit the transaction
+    except sqlite3.Error:
+        conn.rollback()  # Rollback the transaction in case of an error
+    finally:
+        conn.close()
+
 
 def sportssoddss(sportsdbfile):
     response_data = sports_odds()
