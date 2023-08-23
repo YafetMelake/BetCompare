@@ -5,7 +5,7 @@
 from flask import Flask, render_template
 import sqlite3
 from LoginCheck.RapidApiSport import *
-from main import setup_initial_data
+from main import *
 # I could have done whats below in the database but wanted to show variety and use of dictionary
 # It allows the Bookies to be linked to their site so if user wants to place the bet, he has quick
 #  access to the bookmakers site
@@ -101,5 +101,5 @@ def index():
 
 
 if __name__ == '__main__':
-    setup_initial_data()  # Call the function from main to make sure data displayed is most recent
+    setup_initial_data(sportsdbfile)  # Call the function from main to make sure data displayed is most recent
     app.run(debug=True)
