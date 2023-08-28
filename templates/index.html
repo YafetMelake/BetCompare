@@ -3,44 +3,56 @@
 <head>
     <title>BetCompare</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}"> <!-- Link to external CSS -->
 </head>
 <body>
-    <div class="container mt-4">
-        <h1 class="mb-0 text-center title">BetCompare</h1>
-        <p class="subheading">Showing you which bookie gives the best odds for your football game of choice</p>
+    <div class="container mt-3">
+        <div class="jumbotron text-center">
+            <div class="row align-items-center">
+                <div class="col-md-3">
+                    <img src="https://thegamblingclinic.com/wp-content/uploads/2023/06/fact90-meme-scaled-e1686926211252-281x300.jpg" alt="Funny Image" class="img-fluid rounded">
+                </div>
+                <div class="col-md-6">
+                    <h1 class="display-4">BetCompare</h1>
+                    <p>Showing you which bookie gives the best odds for your football game of choice</p>
+                    <p class="lead underline">
+                        <a href="https://www.begambleaware.org/" target="_blank" class="text-white">Visit BeGambleAware for any help</a>
+                    </p>
+                </div>
+                <div class="col-md-3">
+                    <img src="https://mobileslots4u.co.uk/wp-content/themes/mobileslots/images/dont-go-gambling-winning-meme.jpg" alt="Funny Image 2" class="img-fluid rounded">
+                </div>
+            </div>
+        </div>
         
-        <div id="accordion">
+        <div class="accordion" id="accordionMatches">
             {% for league, matches in league_matches.items() %}
             <div class="card">
                 <div class="card-header" id="heading{{ loop.index }}">
-                    <h5 class="mb-0">
-                        <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapse{{ loop.index }}" aria-expanded="false" aria-controls="collapse{{ loop.index }}">
+                    <h2 class="mb-0">
+                        <button class="btn btn-link btn-block text-left" type="button" data-toggle="collapse" data-target="#collapse{{ loop.index }}">
                             {{ league }}
                         </button>
-                    </h5>
+                    </h2>
                 </div>
                 
-                <div id="collapse{{ loop.index }}" class="collapse" aria-labelledby="heading{{ loop.index }}" data-parent="#accordion">
+                <div id="collapse{{ loop.index }}" class="collapse" aria-labelledby="heading{{ loop.index }}" data-parent="#accordionMatches">
                     <div class="card-body">
                         <div class="table-responsive">
-                            <table class="table table-bordered table-hover">
+                            <table class="table table-striped">
                                 <thead class="thead-dark">
                                     <tr>
                                         <th>Bookie</th>
                                         <th>Match</th>
-                                        <th>HomePrice</th>
-                                        <th>AwayPrice</th>
-                                        <th>DrawPrice</th>
+                                        <th>Home Price</th>
+                                        <th>Away Price</th>
+                                        <th>Draw Price</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {% for match in matches %}
                                     <tr>
-                                        <td><a href="{{ bookie_urls.get(match['bookie'], '#') }}">{{ match['bookie'] }}</a></td>
+                                        <td><a href="{{ bookie_urls.get(match['bookie'], '#') }}" target="_blank">{{ match['bookie'] }}</a></td>
                                         <td>{{ match['home_team'] }} vs {{ match['away_team'] }}</td>
                                         <td>{{ match['home_price'] }}</td>
                                         <td>{{ match['away_price'] }}</td>
@@ -57,11 +69,8 @@
         </div>
     </div>
     
-    <div class="container mt-4 text-center">
-        <img src="https://thegamblingclinic.com/wp-content/uploads/2023/06/fact90-meme-scaled-e1686926211252-281x300.jpg" alt="Funny Image" class="image">
-        <p>
-            <a href="https://www.begambleaware.org/" target="_blank" class="link">Visit BeGambleAware for any help</a>
-        </p>
-    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>

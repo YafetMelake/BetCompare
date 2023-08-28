@@ -101,5 +101,5 @@ def index():
 
 
 if __name__ == '__main__':
-    setup_initial_data(sportsdbfile)  # Call the function from main to make sure data displayed is most recent
+    # setup_initial_data(sportsdbfile)  # Call the function from main to make sure data displayed is most recent
     app.run(debug=True)
